@@ -5,6 +5,8 @@ class Tank : public GameObject {
 private:
 	XMFLOAT3 direction_;
 	int hModel_;
+
+	int camType_;
 public:
 
 	Tank(GameObject* parent);
