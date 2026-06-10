@@ -3,6 +3,7 @@
 #include "Engine/Input.h"
 #include "Engine/Debug.h"
 #include "Ground.h"
+#include "Engine/Camera.h"
 
 namespace {
 	XMVECTOR vFront = { 0, 0, 1}; //タンクの前方向
@@ -35,6 +36,34 @@ void Tank::Update() {
 
 		Debug::Log("camType=");
 		Debug::Log(camType_, true);
+	}
+
+	switch (camType_) {
+	case CAM_TYPE::FIXED: {
+		Camera::SetTarget(transform_.position_);
+		Camera::SetPosition(XMFLOAT3(0, 20, -30));
+		break;
+	}
+	case CAM_TYPE::FPS_CAM: {
+		break;
+	}
+	case CAM_TYPE::TPS_CAMROT: {
+		break;
+	}
+	case CAM_TYPE::TPS_COM: {
+		Camera::SetTarget(XMFLOAT3(transform_.position_.x, transform_.position_.y, transform_.position_.z));
+
+		auto pos = XMFLOAT3{ 0, 20, -10 };
+		auto pos1 = transform_.position_;
+		pos1.x -= pos.x;
+		pos1.y -= pos.y;
+		pos1.z -= pos.z;
+
+		Camera::SetPosition(pos);
+		break;
+	}
+	default:
+		break;
 	}
 
 	if (Input::IsKey(DIK_W)) {
