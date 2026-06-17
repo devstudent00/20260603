@@ -1,15 +1,12 @@
 #pragma once
-#include "Engine/GameObject.h"
+#include "Engine//GameObject.h"
 
-class Tank : public GameObject {
+class TankHead : public GameObject {
 private:
-	int hModel_;
-	int camType_;
-	void SetFixedCam(); //固定カメラ
+	int hModel_ = -1;
 public:
-
-	Tank(GameObject* parent);
-	~Tank() {};
+	TankHead(GameObject* parent);
+	~TankHead() {};
 
 	//初期化
 	void Initialize() override;

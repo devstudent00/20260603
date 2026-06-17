@@ -4,10 +4,13 @@
 #include "Engine/Debug.h"
 #include "Ground.h"
 #include "Engine/Camera.h"
+#include "TankHead.h"
+#include "Bullet.h"
 
 namespace {
 	XMVECTOR vFront = { 0, 0, 1}; //タンクの前方向
 	const float speed = 0.1;
+	const float CAM_HEIGHT_BIAS = 0.2f;
 
 	enum CAM_TYPE {
 		FIXED, //固定カメラ
@@ -18,15 +21,19 @@ namespace {
 	};
 }
 
+void Tank::SetFixedCam() {
+	Camera::SetTarget(XMFLOAT3(0, 0, 0));
+	Camera::SetPosition(XMFLOAT3(0, 20, -30));
+}
+
 Tank::Tank(GameObject* parent)
 	: GameObject(parent, "Tank") {
-	direction_ = {};
-	direction_.z = 1.0f;
 	camType_ = CAM_TYPE::FIXED;
 }
 
 void Tank::Initialize() {
 	hModel_ = Model::Load("TankBody.fbx");
+	Instantiate<TankHead>(this);
 }
 
 void Tank::Update() {
@@ -37,29 +44,55 @@ void Tank::Update() {
 		Debug::Log("camType=");
 		Debug::Log(camType_, true);
 	}
+	if (Input::IsKeyDown(DIK_SPACE)) {
+		auto bullet = Instantiate<Bullet>(this->GetParent());
+		bullet->SetPosition(transform_.position_);
+	}
+
+	XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
+
+	XMMATRIX matRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
+	XMVECTOR vMove = XMVector3TransformCoord(vFront, matRot);
+	
 
 	switch (camType_) {
 	case CAM_TYPE::FIXED: {
-		Camera::SetTarget(transform_.position_);
-		Camera::SetPosition(XMFLOAT3(0, 20, -30));
-		break;
-	}
-	case CAM_TYPE::FPS_CAM: {
-		break;
-	}
-	case CAM_TYPE::TPS_CAMROT: {
+		SetFixedCam();
 		break;
 	}
 	case CAM_TYPE::TPS_COM: {
-		Camera::SetTarget(XMFLOAT3(transform_.position_.x, transform_.position_.y, transform_.position_.z));
+		//3人称
 
-		auto pos = XMFLOAT3{ 0, 20, -10 };
-		auto pos1 = transform_.position_;
-		pos1.x -= pos.x;
-		pos1.y -= pos.y;
-		pos1.z -= pos.z;
+		XMFLOAT3 camPos = transform_.position_;
+		camPos.y += 10.0f;
+		camPos.z -= 8.0f;
+		Camera::SetPosition(camPos);
 
-		Camera::SetPosition(pos);
+		XMFLOAT3 camTarget = transform_.position_;
+		Camera::SetTarget(camTarget);
+		break;
+	}
+	case CAM_TYPE::TPS_CAMROT: {
+		XMFLOAT3 camPos;
+		XMVECTOR vCam = { 0.0f, 3.0f, -7.0f, 0.0f };
+		vCam = XMVector3TransformCoord(vCam, matRot);
+		XMStoreFloat3(&camPos, vPos + vCam);
+		Camera::SetPosition(camPos);
+
+		XMFLOAT3 camTarget = transform_.position_;
+		Camera::SetTarget(camTarget);
+
+		break;
+	}
+	case CAM_TYPE::FPS_CAM: {
+		XMFLOAT3 camPos = transform_.position_;
+		camPos.y = camPos.y + CAM_HEIGHT_BIAS;
+		Camera::SetPosition(camPos);
+
+		XMFLOAT3 camTarget = {};
+		XMStoreFloat3(&camTarget, vPos + vMove);
+
+		Camera::SetTarget(camTarget);
 		break;
 	}
 	default:
@@ -67,10 +100,6 @@ void Tank::Update() {
 	}
 
 	if (Input::IsKey(DIK_W)) {
-		XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
-		
-		XMMATRIX matRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
-		XMVECTOR vMove = XMVector3TransformCoord(vFront, matRot);
 		vPos = vPos + speed * vMove;
 		XMStoreFloat3(&transform_.position_, vPos);
 	}
@@ -95,14 +124,11 @@ void Tank::Update() {
 	//Debug::Log("yAngle=");
 	//Debug::Log(transform_.rotate_.y, true);
 
-	direction_.x = cos(transform_.rotate_.y);
-	direction_.z = sin(transform_.rotate_.y);
-
 	Ground* ground = (Ground*)FindObject("Ground");
 	RayCastData data = {};
 	data.start = transform_.position_;
 	data.start.y = 0.0f;
-	data.dir = { 0, -1, 1 };
+	data.dir = { 0, -1, 0 };
 	Model::RayCast(ground->GetModelHandle(), &data);
 	if (data.hit) {
 		transform_.position_.y = -data.dist;
