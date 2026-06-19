@@ -4,7 +4,7 @@
 #include <random>
 
 Enemy::Enemy(GameObject* parent)
-	: GameObject(parent, "Bullet"), hModel_(-1) {
+	: GameObject(parent, "Enemy"), hModel_(-1) {
 }
 
 Enemy::~Enemy()
@@ -32,6 +32,11 @@ void Enemy::Update()
 {
 	transform_.position_.x += velocity_.x;
 	transform_.position_.z += velocity_.z;
+
+	if (transform_.position_.x > 20 || transform_.position_.x < -20 ||
+		transform_.position_.z > 20 || transform_.position_.z < -20) {
+
+	}
 
 	Ground* ground = (Ground*)FindObject("Ground");
 	RayCastData data = {};
