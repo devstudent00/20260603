@@ -4,6 +4,7 @@
 class Enemy : public GameObject {
 private:
 	int hModel_;
+	XMFLOAT3 velocity_;
 public:
 	Enemy(GameObject* parent);
 	~Enemy();

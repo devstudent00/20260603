@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "Engine/Model.h"
 #include "Ground.h"
+#include <random>
 
 Enemy::Enemy(GameObject* parent)
 	: GameObject(parent, "Bullet"), hModel_(-1) {
@@ -14,11 +15,23 @@ void Enemy::Initialize()
 {
 	hModel_ = Model::Load("Enemy.fbx");
 	AddCollider(new BoxCollider(transform_.position_, { 1.25f, 3.0f, 1.25f }));
+
+	std::random_device rd;
+	std::mt19937 gen(rd());
+
+	float min = -0.25f;
+	float max = 0.25f;
+	std::uniform_real_distribution<float> dis(min, max);
+
+	float x = dis(gen);
+	float z = dis(gen);
+	velocity_ = {x, 0, z};
 }
 
 void Enemy::Update()
 {
-	transform_.position_.z += 0.05;
+	transform_.position_.x += velocity_.x;
+	transform_.position_.z += velocity_.z;
 
 	Ground* ground = (Ground*)FindObject("Ground");
 	RayCastData data = {};
@@ -27,7 +40,7 @@ void Enemy::Update()
 	data.dir = { 0, -1, 0 };
 	Model::RayCast(ground->GetModelHandle(), &data);
 	if (data.hit) {
-		transform_.position_.y = -data.dist;
+
 	}
 	else {
 

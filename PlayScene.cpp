@@ -18,7 +18,18 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize() {
 	Instantiate<Ground>(this);
 	Instantiate<Tank>(this);
-	Instantiate<Enemy>(this);
+
+	const int ENEMY_COUNT = 5;
+	srand((unsigned int)time(nullptr));
+
+	for (int i = 0; i < ENEMY_COUNT; i++) {
+		int x = rand() % 40 - 20;
+		int  z = rand() % 40 - 20;
+
+		auto enemy = Instantiate<Enemy>(this);
+		enemy->SetPosition({(float) x, 5, (float) z});
+	}
+	
 }
 
 //更新
