@@ -38,22 +38,17 @@ void Tank::Initialize() {
 
 void Tank::Update() {
 
+	XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
+
+	XMMATRIX matRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
+	XMVECTOR vMove = XMVector3TransformCoord(vFront, matRot);
+
 	if (Input::IsKeyDown(DIK_C)) {
 		camType_ = (camType_ + 1) % CAM_TYPE_MAX;
 
 		Debug::Log("camType=");
 		Debug::Log(camType_, true);
 	}
-	if (Input::IsKeyDown(DIK_SPACE)) {
-		auto bullet = Instantiate<Bullet>(this->GetParent());
-		bullet->SetPosition(transform_.position_);
-	}
-
-	XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
-
-	XMMATRIX matRot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
-	XMVECTOR vMove = XMVector3TransformCoord(vFront, matRot);
-	
 
 	switch (camType_) {
 	case CAM_TYPE::FIXED: {

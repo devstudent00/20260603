@@ -1,12 +1,12 @@
 #pragma once
 #include "Engine//GameObject.h"
-class Bullet : public GameObject {
+
+class Enemy : public GameObject {
 private:
 	int hModel_;
-	XMFLOAT3 move_;  //弾の進行方向
 public:
-	Bullet(GameObject* parent);
-	~Bullet() {};
+	Enemy(GameObject* parent);
+	~Enemy();
 
 	//初期化
 	void Initialize() override;
@@ -20,6 +20,7 @@ public:
 	//開放
 	void Release() override;
 
-	void SetMoveVector(const XMFLOAT3& move) { move_ = move; }
+	void OnCollision(GameObject* pTarget);
+
 };
 
