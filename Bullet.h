@@ -4,6 +4,7 @@ class Bullet : public GameObject {
 private:
 	int hModel_;
 	XMFLOAT3 move_;  //弾の進行方向
+	GameObject* fromBullet;
 public:
 	Bullet(GameObject* parent);
 	~Bullet() {};
@@ -21,5 +22,8 @@ public:
 	void Release() override;
 
 	void SetMoveVector(const XMFLOAT3& move) { move_ = move; }
+
+	GameObject* GetFrom() { return fromBullet; }
+	void SetFrom(GameObject* obj) { fromBullet = obj; }
 };
 

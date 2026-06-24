@@ -3,6 +3,7 @@
 
 class Tank : public GameObject {
 private:
+
 	int hModel_;
 	int camType_;
 	void SetFixedCam(); //固定カメラ
@@ -22,5 +23,6 @@ public:
 
 	//開放
 	void Release() override;
+
 };
 

@@ -6,6 +6,7 @@
 
 TankHead::TankHead(GameObject* parent)
 	: GameObject(parent, "TankHead")  {
+	point_ = 0;
 }
 
 void TankHead::Initialize() {
@@ -38,6 +39,7 @@ void TankHead::Update() {
 		auto bullet = Instantiate<Bullet>(this->GetParent()->GetParent());
 		bullet->SetPosition(cannonTop);
 		bullet->SetMoveVector(movePos);
+		bullet->SetFrom(this);
 
 		//bullet->SetPosition(bulletPos);
 		//bullet->SetRotate(transform_.rotate_);

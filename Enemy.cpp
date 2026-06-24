@@ -2,6 +2,8 @@
 #include "Engine/Model.h"
 #include "Ground.h"
 #include <random>
+#include "Bullet.h"
+#include "TankHead.h"
 
 Enemy::Enemy(GameObject* parent)
 	: GameObject(parent, "Enemy"), hModel_(-1) {
@@ -14,18 +16,9 @@ Enemy::~Enemy()
 void Enemy::Initialize()
 {
 	hModel_ = Model::Load("Enemy.fbx");
+	Model::SetAnimFrame(hModel_, 1, 100, 2.0f);
+
 	AddCollider(new BoxCollider(transform_.position_, { 1.25f, 3.0f, 1.25f }));
-
-	std::random_device rd;
-	std::mt19937 gen(rd());
-
-	float min = -0.25f;
-	float max = 0.25f;
-	std::uniform_real_distribution<float> dis(min, max);
-
-	float x = dis(gen);
-	float z = dis(gen);
-	velocity_ = {x, 0, z};
 }
 
 void Enemy::Update()
@@ -45,7 +38,7 @@ void Enemy::Update()
 	data.dir = { 0, -1, 0 };
 	Model::RayCast(ground->GetModelHandle(), &data);
 	if (data.hit) {
-
+		transform_.position_.y = -data.dist;
 	}
 	else {
 
@@ -65,5 +58,8 @@ void Enemy::Release()
 void Enemy::OnCollision(GameObject* pTarget) {
 	if (pTarget->GetObjectName() == "Bullet") {
 		KillMe();
+		TankHead* obj = dynamic_cast<TankHead*>(((Bullet*)pTarget)->GetFrom());
+		if (obj == nullptr) return;
+		obj->SetPoint(obj->GetPoint() + 1);
 	}
 }

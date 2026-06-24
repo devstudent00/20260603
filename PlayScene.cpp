@@ -3,9 +3,12 @@
 #include "Tank.h"
 #include "Engine/Model.h"
 #include "Enemy.h"
+#include "Engine/Text.h"
+#include "TankHead.h"
 
 namespace {
 	int saikoro = -1;
+	Text* leftText = nullptr;
 }
 
 
@@ -18,12 +21,14 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize() {
 	Instantiate<Ground>(this);
 	Instantiate<Tank>(this);
+	leftText = new Text();
+	leftText->Initialize();
 
 	const int ENEMY_COUNT = 5;
 	srand((unsigned int)time(nullptr));
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {
-		int x = rand() % 40 - 20;
+		int x = rand() % 40 - 20; //-20～20
 		int  z = rand() % 40 - 20;
 
 		auto enemy = Instantiate<Enemy>(this);
@@ -38,8 +43,13 @@ void PlayScene::Update()
 }
 
 //描画
-void PlayScene::Draw()
-{
+void PlayScene::Draw() {
+	if (leftText == nullptr) return;
+
+	TankHead* tank = (TankHead*)FindObject("TankHead");
+	if (tank == nullptr) return;
+	std::string text = "Point: " + std::to_string(tank->GetPoint());
+	leftText->Draw(15, 15, text.c_str());
 }
 
 //開放
