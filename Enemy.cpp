@@ -15,7 +15,7 @@ Enemy::~Enemy()
 
 void Enemy::Initialize()
 {
-	hModel_ = Model::Load("Enemy2.fbx");
+	hModel_ = Model::Load("enemy3.fbx");
 	assert(hModel_ > 0);
 	Model::SetAnimFrame(hModel_, 1, 100, 2.0f);
 
