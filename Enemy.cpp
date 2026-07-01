@@ -15,7 +15,8 @@ Enemy::~Enemy()
 
 void Enemy::Initialize()
 {
-	hModel_ = Model::Load("Enemy.fbx");
+	hModel_ = Model::Load("Enemy2.fbx");
+	assert(hModel_ > 0);
 	Model::SetAnimFrame(hModel_, 1, 100, 2.0f);
 
 	AddCollider(new BoxCollider(transform_.position_, { 1.25f, 3.0f, 1.25f }));

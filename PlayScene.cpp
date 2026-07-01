@@ -24,7 +24,7 @@ void PlayScene::Initialize() {
 	leftText = new Text();
 	leftText->Initialize();
 
-	const int ENEMY_COUNT = 5;
+	const int ENEMY_COUNT = 10;
 	srand((unsigned int)time(nullptr));
 
 	for (int i = 0; i < ENEMY_COUNT; i++) {
